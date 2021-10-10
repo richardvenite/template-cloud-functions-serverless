@@ -1,0 +1,20 @@
+version: '3'
+services:
+  firebase:
+    container_name: template-ff
+    restart: always
+    image: template-firebase-functions
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    command: sh -c "firebase emulators:start"
+    ports:
+      - 5001:5001
+      - 4000:4000
+      - 9199:9199
+    environment:
+      - GOOGLE_APPLICATION_CREDENTIALS=/keys/gcp.json
+    volumes:
+      - ./:/app
+      - ../keys/:/keys #folder with gcp key
+    working_dir: /app

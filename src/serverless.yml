@@ -1,0 +1,49 @@
+custom:
+  stage: ${opt:stage, "dev"}
+  env: ${file(./env.yml):${self:custom.stage}}
+
+service: ${self:custom.env.SERVICE_NAME}
+
+provider:
+  name: google
+  runtime: nodejs14
+  environment: ${self:custom.env}
+  region: ${self:custom.env.REGION}
+  project: ${self:custom.env.GCLOUD_PROJECT}
+  credentials: ${self:custom.env.CREDENTIALS}
+
+frameworkVersion: '2'
+
+plugins:
+  - serverless-google-cloudfunctions
+
+package:
+  exclude:
+    - node_modules/**
+    - .gitignore
+    - .git/**
+
+functions:
+  helloHttp:
+    handler: helloHttp
+    events:
+      - http: path
+
+  helloStorage:
+    handler: helloStorage
+    events:
+      - event:
+          eventType: google.storage.object.finalize
+          resource: projects/${self:custom.env.GCLOUD_PROJECT}/buckets/${self:custom.env.BUCKET_NAME}
+
+  helloPubSub:
+    handler: helloPubSub
+    events:
+      - event: 
+          eventType: providers/cloud.pubsub/eventTypes/topic.publish
+          resource: projects/${self:custom.env.GCLOUD_PROJECT}/topics/${self:custom.env.TOPIC_NAME}
+
+resources:
+  resources:
+    - type: storage.v1.bucket
+      name: ${self:custom.env.BUCKET_NAME}

@@ -1,0 +1,10 @@
+{
+  "env": {
+    "hello_world": {
+      "user": "circe",
+      "app_env": "development",
+      "command": "update"
+    },
+    "JWT_SECRET": "funcional"
+  }
+}
